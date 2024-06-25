@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>骰寶推薦下注</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        input[type="number"] {
+            margin: 10px 5px;
+            padding: 5px;
+            width: 50px;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 0;
+        }
+        #history {
+            margin-top: 20px;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .low {
+            color: red;
+        }
+        .high {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <input type="number" id="dice1" min="1" max="6">
+        <input type="number" id="dice2" min="1" max="6">
+        <input type="number" id="dice3" min="1" max="6">
+        <button onclick="addResult()">提交</button>
+    </div>
+    <div id="history">
+        <h2>歷史數據</h2>
+        <ul id="resultsList"></ul>
+    </div>
+    <p id="recommendation"></p>
+
+    <div id="probabilityTables">
+        <h3>概率表</h3>
+        <table id="probabilityTable">
+            <thead>
+                <tr>
+                    <th>範圍</th>
+                    <th>前10次</th>
+                    <th>前20次</th>
+                    <th>所有歷史數據</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>大 (48.61%)</td>
+                    <td id="bigFrequency10">0</td>
+                    <td id="bigFrequency20">0</td>
+                    <td id="bigFrequencyAll">0</td>
+                </tr>
+                <tr>
+                    <td>小 (48.61%)</td>
+                    <td id="smallFrequency10">0</td>
+                    <td id="smallFrequency20">0</td>
+                    <td id="smallFrequencyAll">0</td>
+                </tr>
+                <tr>
+                    <td>4點 (1.39%)</td>
+                    <td id="sumFrequency10-4">0</td>
+                    <td id="sumFrequency20-4">0</td>
+                    <td id="sumFrequencyAll-4">0</td>
+                </tr>
+                <tr>
+                    <td>5點 (2.78%)</td>
+                    <td id="sumFrequency10-5">0</td>
+                    <td id="sumFrequency20-5">0</td>
+                    <td id="sumFrequencyAll-5">0</td>
+                </tr>
+                <tr>
+                    <td>6點 (4.63%)</td>
+                    <td id="sumFrequency10-6">0</td>
+                    <td id="sumFrequency20-6">0</td>
+                    <td id="sumFrequencyAll-6">0</td>
+                </tr>
+                <tr>
+                    <td>7點 (6.94%)</td>
+                    <td id="sumFrequency10-7">0</td>
+                    <td id="sumFrequency20-7">0</td>
+                    <td id="sumFrequencyAll-7">0</td>
+                </tr>
+                <tr>
+                    <td>8點 (9.72%)</td>
+                    <td id="sumFrequency10-8">0</td>
+                    <td id="sumFrequency20-8">0</td>
+                    <td id="sumFrequencyAll-8">0</td>
+                </tr>
+                <tr>
+                    <td>9點 (11.57%)</td>
+                    <td id="sumFrequency10-9">0</td>
+                    <td id="sumFrequency20-9">0</td>
+                    <td id="sumFrequencyAll-9">0</td>
+                </tr>
+                <tr>
+                    <td>10點 (12.50%)</td>
+                    <td id="sumFrequency10-10">0</td>
+                    <td id="sumFrequency20-10">0</td>
+                    <td id="sumFrequencyAll-10">0</td>
+                </tr>
+                <tr>
+                    <td>11點 (12.50%)</td>
+                    <td id="sumFrequency10-11">0</td>
+                    <td id="sumFrequency20-11">0</td>
+                    <td id="sumFrequencyAll-11">0</td>
+                </tr>
+                <tr>
+                    <td>12點 (11.57%)</td>
+                    <td id="sumFrequency10-12">0</td>
+                    <td id="sumFrequency20-12">0</td>
+                    <td id="sumFrequencyAll-12">0</td>
+                </tr>
+                <tr>
+                    <td>13點 (9.72%)</td>
+                    <td id="sumFrequency10-13">0</td>
+                    <td id="sumFrequency20-13">0</td>
+                    <td id="sumFrequencyAll-13">0</td>
+                </tr>
+                <tr>
+                    <td>14點 (6.94%)</td>
+                    <td id="sumFrequency10-14">0</td>
+                    <td id="sumFrequency20-14">0</td>
+                    <td id="sumFrequencyAll-14">0</td>
+                </tr>
+                <tr>
+                    <td>15點 (4.63%)</td>
+                    <td id="sumFrequency10-15">0</td>
+                    <td id="sumFrequency20-15">0</td>
+                    <td id="sumFrequencyAll-15">0</td>
+                </tr>
+                <tr>
+                    <td>16點 (2.78%)</td>
+                    <td id="sumFrequency10-16">0</td>
+                    <td id="sumFrequency20-16">0</td>
+                    <td id="sumFrequencyAll-16">0</td>
+                </tr>
+                <tr>
+                    <td>17點 (1.39%)</td>
+                    <td id="sumFrequency10-17">0</td>
+                    <td id="sumFrequency20-17">0</td>
+                    <td id="sumFrequencyAll-17">0</td>
+                </tr>
+                <tr>
+                    <td>單豹子 1,1,1 (0.46%)</td>
+                    <td id="singleTripleFrequency10-1">0</td>
+                    <td id="singleTripleFrequency20-1">0</td>
+                    <td id="singleTripleFrequencyAll-1">0</td>
+                </tr>
+                <tr>
+                    <td>單豹子 2,2,2 (0.46%)</td>
+                    <td id="singleTripleFrequency10-2">0</td>
+                    <td id="singleTripleFrequency20-2">0</td>
+                    <td id="singleTripleFrequencyAll-2">0</td>
+                </tr>
+                <tr>
+                    <td>單豹子 3,3,3 (0.46%)</td>
+                    <td id="singleTripleFrequency10-3">0</td>
+                    <td id="singleTripleFrequency20-3">0</td>
+                    <td id="singleTripleFrequencyAll-3">0</td>
+                </tr>
+                <tr>
+                    <td>單豹子 4,4,4 (0.46%)</td>
+                    <td id="singleTripleFrequency10-4">0</td>
+                    <td id="singleTripleFrequency20-4">0</td>
+                    <td id="singleTripleFrequencyAll-4">0</td>
+                </tr>
+                <tr>
+                    <td>單豹子 5,5,5 (0.46%)</td>
+                    <td id="singleTripleFrequency10-5">0</td>
+                    <td id="singleTripleFrequency20-5">0</td>
+                    <td id="singleTripleFrequencyAll-5">0</td>
+                </tr>
+                <tr>
+                    <td>單豹子 6,6,6 (0.46%)</td>
+                    <td id="singleTripleFrequency10-6">0</td>
+                    <td id="singleTripleFrequency20-6">0</td>
+                    <td id="singleTripleFrequencyAll-6">0</td>
+                </tr>
+                <tr>
+                    <td>全圍豹子 (2.78%)</td>
+                    <td id="tripleFrequency10">0</td>
+                    <td id="tripleFrequency20">0</td>
+                    <td id="tripleFrequencyAll">0</td>
+                </tr>
+                <tr>
+                    <td>對子 1,1 (7.41%)</td>
+                    <td id="doubleFrequency10-1">0</td>
+                    <td id="doubleFrequency20-1">0</td>
+                    <td id="doubleFrequencyAll-1">0</td>
+                </tr>
+                <tr>
+                    <td>對子 2,2 (7.41%)</td>
+                    <td id="doubleFrequency10-2">0</td>
+                    <td id="doubleFrequency20-2">0</td>
+                    <td id="doubleFrequencyAll-2">0</td>
+                </tr>
+                <tr>
+                    <td>對子 3,3 (7.41%)</td>
+                    <td id="doubleFrequency10-3">0</td>
+                    <td id="doubleFrequency20-3">0</td>
+                    <td id="doubleFrequencyAll-3">0</td>
+                </tr>
+                <tr>
+                    <td>對子 4,4 (7.41%)</td>
+                    <td id="doubleFrequency10-4">0</td>
+                    <td id="doubleFrequency20-4">0</td>
+                    <td id="doubleFrequencyAll-4">0</td>
+                </tr>
+                <tr>
+                    <td>對子 5,5 (7.41%)</td>
+                    <td id="doubleFrequency10-5">0</td>
+                    <td id="doubleFrequency20-5">0</td>
+                    <td id="doubleFrequencyAll-5">0</td>
+                </tr>
+                <tr>
+                    <td>對子 6,6 (7.41%)</td>
+                    <td id="doubleFrequency10-6">0</td>
+                    <td id="doubleFrequency20-6">0</td>
+                    <td id="doubleFrequencyAll-6">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 1,2 (13.89%)</td>
+                    <td id="pairFrequency10-1-2">0</td>
+                    <td id="pairFrequency20-1-2">0</td>
+                    <td id="pairFrequencyAll-1-2">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 1,3 (13.89%)</td>
+                    <td id="pairFrequency10-1-3">0</td>
+                    <td id="pairFrequency20-1-3">0</td>
+                    <td id="pairFrequencyAll-1-3">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 1,4 (13.89%)</td>
+                    <td id="pairFrequency10-1-4">0</td>
+                    <td id="pairFrequency20-1-4">0</td>
+                    <td id="pairFrequencyAll-1-4">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 1,5 (13.89%)</td>
+                    <td id="pairFrequency10-1-5">0</td>
+                    <td id="pairFrequency20-1-5">0</td>
+                    <td id="pairFrequencyAll-1-5">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 1,6 (13.89%)</td>
+                    <td id="pairFrequency10-1-6">0</td>
+                    <td id="pairFrequency20-1-6">0</td>
+                    <td id="pairFrequencyAll-1-6">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 2,3 (13.89%)</td>
+                    <td id="pairFrequency10-2-3">0</td>
+                    <td id="pairFrequency20-2-3">0</td>
+                    <td id="pairFrequencyAll-2-3">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 2,4 (13.89%)</td>
+                    <td id="pairFrequency10-2-4">0</td>
+                    <td id="pairFrequency20-2-4">0</td>
+                    <td id="pairFrequencyAll-2-4">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 2,5 (13.89%)</td>
+                    <td id="pairFrequency10-2-5">0</td>
+                    <td id="pairFrequency20-2-5">0</td>
+                    <td id="pairFrequencyAll-2-5">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 2,6 (13.89%)</td>
+                    <td id="pairFrequency10-2-6">0</td>
+                    <td id="pairFrequency20-2-6">0</td>
+                    <td id="pairFrequencyAll-2-6">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 3,4 (13.89%)</td>
+                    <td id="pairFrequency10-3-4">0</td>
+                    <td id="pairFrequency20-3-4">0</td>
+                    <td id="pairFrequencyAll-3-4">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 3,5 (13.89%)</td>
+                    <td id="pairFrequency10-3-5">0</td>
+                    <td id="pairFrequency20-3-5">0</td>
+                    <td id="pairFrequencyAll-3-5">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 3,6 (13.89%)</td>
+                    <td id="pairFrequency10-3-6">0</td>
+                    <td id="pairFrequency20-3-6">0</td>
+                    <td id="pairFrequencyAll-3-6">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 4,5 (13.89%)</td>
+                    <td id="pairFrequency10-4-5">0</td>
+                    <td id="pairFrequency20-4-5">0</td>
+                    <td id="pairFrequencyAll-4-5">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 4,6 (13.89%)</td>
+                    <td id="pairFrequency10-4-6">0</td>
+                    <td id="pairFrequency20-4-6">0</td>
+                    <td id="pairFrequencyAll-4-6">0</td>
+                </tr>
+                <tr>
+                    <td>雙骰 5,6 (13.89%)</td>
+                    <td id="pairFrequency10-5-6">0</td>
+                    <td id="pairFrequency20-5-6">0</td>
+                    <td id="pairFrequencyAll-5-6">0</td>
+                </tr>
+                <tr>
+                    <td>單骰1 (34.72%)</td>
+                    <td id="singleDiceFrequency10-1">0</td>
+                    <td id="singleDiceFrequency20-1">0</td>
+                    <td id="singleDiceFrequencyAll-1">0</td>
+                </tr>
+                <tr>
+                    <td>單骰2 (34.72%)</td>
+                    <td id="singleDiceFrequency10-2">0</td>
+                    <td id="singleDiceFrequency20-2">0</td>
+                    <td id="singleDiceFrequencyAll-2">0</td>
+                </tr>
+                <tr>
+                    <td>單骰3 (34.72%)</td>
+                    <td id="singleDiceFrequency10-3">0</td>
+                    <td id="singleDiceFrequency20-3">0</td>
+                    <td id="singleDiceFrequencyAll-3">0</td>
+                </tr>
+                <tr>
+                    <td>單骰4 (34.72%)</td>
+                    <td id="singleDiceFrequency10-4">0</td>
+                    <td id="singleDiceFrequency20-4">0</td>
+                    <td id="singleDiceFrequencyAll-4">0</td>
+                </tr>
+                <tr>
+                    <td>單骰5 (34.72%)</td>
+                    <td id="singleDiceFrequency10-5">0</td>
+                    <td id="singleDiceFrequency20-5">0</td>
+                    <td id="singleDiceFrequencyAll-5">0</td>
+                </tr>
+                <tr>
+                    <td>單骰6 (34.72%)</td>
+                    <td id="singleDiceFrequency10-6">0</td>
+                    <td id="singleDiceFrequency20-6">0</td>
+                    <td id="singleDiceFrequencyAll-6">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        var resultsArray = [];
+
+        function addResult() {
+            var dice1 = parseInt(document.getElementById('dice1').value);
+            var dice2 = parseInt(document.getElementById('dice2').value);
+            var dice3 = parseInt(document.getElementById('dice3').value);
+            if (isNaN(dice1) || isNaN(dice2) || isNaN(dice3)) {
+                alert("請輸入所有的擲骰子結果");
+                return;
+            }
+            resultsArray.push([dice1, dice2, dice3]);
+            document.getElementById('dice1').value = "";
+            document.getElementById('dice2').value = "";
+            document.getElementById('dice3').value = "";
+
+            updateHistory();
+            recommendBet();
+        }
+
+        function updateHistory() {
+            var resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = "";
+            resultsArray.forEach((result, index) => {
+                var listItem = document.createElement('li');
+                listItem.textContent = `第 ${index + 1} 次: ${result.join(', ')}`;
+                resultsList.appendChild(listItem);
+            });
+        }
+
+        function recommendBet() {
+            if (resultsArray.length < 1) {
+                return;
+            }
+
+            function analyzeResults(data) {
+                var totalCount = data.length;
+                var bigCount = 0;
+                var smallCount = 0;
+                var sumFrequency = Array(18).fill(0); // 記錄4~17點的出現次數
+                var singleTripleCount = Array(6).fill(0); // 記錄單豹子的出現次數
+                var tripleCount = 0;
+                var doubleCount = Array(6).fill(0); // 記錄對子的出現次數
+                var pairFrequency = Array(15).fill(0); // 記錄雙骰的出現次數
+                var singleDiceCount = Array(6).fill(0); // 用於計算1-6每個數字出現的次數
+
+                data.forEach(result => {
+                    var sum = result.reduce((a, b) => a + b, 0);
+                    if (sum >= 11) {
+                        bigCount++;
+                    } else {
+                        smallCount++;
+                    }
+                    if (sum >= 4 && sum <= 17) {
+                        sumFrequency[sum]++;
+                    }
+                    if (result[0] === result[1] && result[1] === result[2]) {
+                        singleTripleCount[result[0] - 1]++;
+                        tripleCount++;
+                    }
+                    var diceCounts = {};
+                    result.forEach(dice => {
+                        singleDiceCount[dice - 1]++;
+                        diceCounts[dice] = (diceCounts[dice] || 0) + 1;
+                    });
+                    for (var dice in diceCounts) {
+                        if (diceCounts[dice] === 2) {
+                            doubleCount[dice - 1]++;
+                        }
+                    }
+                    var pairs = [
+                        [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [2, 3], [2, 4], [2, 5], [2, 6],
+                        [3, 4], [3, 5], [3, 6], [4, 5], [4, 6], [5, 6]
+                    ];
+                    pairs.forEach((pair, index) => {
+                        if (result.includes(pair[0]) && result.includes(pair[1])) {
+                            pairFrequency[index]++;
+                        }
+                    });
+                });
+
+                return {
+                    big: bigCount,
+                    small: smallCount,
+                    sum: sumFrequency,
+                    singleTriple: singleTripleCount,
+                    triple: tripleCount, // 累計豹子
+                    double: doubleCount,
+                    pair: pairFrequency,
+                    singleDice: singleDiceCount,
+                    total: totalCount
+                };
+            }
+
+            function updateTable(rowId, results) {
+                var bigFrequency = results.big / results.total;
+                var smallFrequency = results.small / results.total;
+                var sumFrequency = results.sum.map(count => count / results.total);
+                var singleTripleFrequency = results.singleTriple.map(count => count / results.total);
+                var tripleFrequency = results.triple / results.total;
+                var doubleFrequency = results.double.map(count => count / results.total);
+                var pairFrequency = results.pair.map(count => count / results.total);
+                var singleDiceFrequency = results.singleDice.map(count => count / results.total);
+
+                var bigFrequencyElement = document.getElementById('bigFrequency' + rowId);
+                var smallFrequencyElement = document.getElementById('smallFrequency' + rowId);
+                for (var i = 4; i <= 17; i++) {
+                    var sumFrequencyElement = document.getElementById('sumFrequency' + rowId + '-' + i);
+                    sumFrequencyElement.innerText = (sumFrequency[i] * 100).toFixed(2) + '%';
+                }
+                for (var i = 0; i < 6; i++) {
+                    var singleTripleFrequencyElement = document.getElementById('singleTripleFrequency' + rowId + '-' + (i + 1));
+                    singleTripleFrequencyElement.innerText = (singleTripleFrequency[i] * 100).toFixed(2) + '%';
+                }
+                var tripleFrequencyElement = document.getElementById('tripleFrequency' + rowId);
+                for (var i = 0; i < 6; i++) {
+                    var doubleFrequencyElement = document.getElementById('doubleFrequency' + rowId + '-' + (i + 1));
+                    doubleFrequencyElement.innerText = (doubleFrequency[i] * 100).toFixed(2) + '%';
+                }
+                var pairs = [
+                    [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], [2, 3], [2, 4], [2, 5], [2, 6],
+                    [3, 4], [3, 5], [3, 6], [4, 5], [4, 6], [5, 6]
+                ];
+                pairs.forEach((pair, index) => {
+                    var pairFrequencyElement = document.getElementById('pairFrequency' + rowId + '-' + pair.join('-'));
+                    pairFrequencyElement.innerText = (pairFrequency[index] * 100).toFixed(2) + '%';
+                });
+                for (var i = 0; i < 6; i++) {
+                    var singleDiceFrequencyElement = document.getElementById('singleDiceFrequency' + rowId + '-' + (i + 1));
+                    singleDiceFrequencyElement.innerText = (singleDiceFrequency[i] * 100).toFixed(2) + '%';
+                }
+
+                bigFrequencyElement.innerText = (bigFrequency * 100).toFixed(2) + '%';
+                smallFrequencyElement.innerText = (smallFrequency * 100).toFixed(2) + '%';
+                tripleFrequencyElement.innerText = (tripleFrequency * 100).toFixed(2) + '%';
+
+                var expectedFrequency = 0.4861; // 理論上大和小的概率都是48.61%
+                var recommendations = [];
+
+                if (smallFrequency < expectedFrequency) {
+                    smallFrequencyElement.className = "low";
+                    bigFrequencyElement.className = "";
+                    recommendations.push("小的出現頻率低於期望值，推薦下注小");
+                } else if (bigFrequency < expectedFrequency) {
+                    bigFrequencyElement.className = "low";
+                    smallFrequencyElement.className = "";
+                    recommendations.push("大的出現頻率低於期望值，推薦下注大");
+                } else {
+                    bigFrequencyElement.className = "high";
+                    smallFrequencyElement.className = "high";
+                }
+
+                // 其他選項的推薦信息
+                var expectedFrequencies = {
+                    4: 0.0139,
+                    5: 0.0278,
+                    6: 0.0463,
+                    7: 0.0694,
+                    8: 0.0972,
+                    9: 0.1157,
+                    10: 0.1250,
+                    11: 0.1250,
+                    12: 0.1157,
+                    13: 0.0972,
+                    14: 0.0694,
+                    15: 0.0463,
+                    16: 0.0278,
+                    17: 0.0139,
+                    singleTriple: 0.0046,
+                    triple: 0.0278,
+                    double: 0.0741,
+                    pair: 0.1389,
+                    singleDice: 0.3472
+                };
+
+                for (var i = 4; i <= 17; i++) {
+                    var sumFrequencyElement = document.getElementById('sumFrequency' + rowId + '-' + i);
+                    if (sumFrequency[i] < expectedFrequencies[i]) {
+                        sumFrequencyElement.className = "low";
+                        recommendations.push(i + "點的出現頻率低於期望值，推薦下注" + i + "點");
+                    } else {
+                        sumFrequencyElement.className = "";
+                    }
+                }
+
+                for (var i = 0; i < 6; i++) {
+                    var singleTripleFrequencyElement = document.getElementById('singleTripleFrequency' + rowId + '-' + (i + 1));
+                    if (singleTripleFrequency[i] < expectedFrequencies.singleTriple) {
+                        singleTripleFrequencyElement.className = "low";
+                        recommendations.push("單豹子" + (i + 1) + "的出現頻率低於期望值，推薦下注單豹子" + (i + 1));
+                    } else {
+                        singleTripleFrequencyElement.className = "";
+                    }
+                }
+
+                if (tripleFrequency < expectedFrequencies.triple) {
+                    tripleFrequencyElement.className = "low";
+                    recommendations.push("全圍豹子的出現頻率低於期望值，推薦下注全圍豹子");
+                } else {
+                    tripleFrequencyElement.className = "";
+                }
+
+                for (var i = 0; i < 6; i++) {
+                    var doubleFrequencyElement = document.getElementById('doubleFrequency' + rowId + '-' + (i + 1));
+                    if (doubleFrequency[i] < expectedFrequencies.double) {
+                        doubleFrequencyElement.className = "low";
+                        recommendations.push("對子" + (i + 1) + "的出現頻率低於期望值，推薦下注對子" + (i + 1));
+                    } else {
+                        doubleFrequencyElement.className = "";
+                    }
+                }
+
+                pairs.forEach((pair, index) => {
+                    var pairFrequencyElement = document.getElementById('pairFrequency' + rowId + '-' + pair.join('-'));
+                    if (pairFrequency[index] < expectedFrequencies.pair) {
+                        pairFrequencyElement.className = "low";
+                        recommendations.push("雙骰" + pair.join('-') + "的出現頻率低於期望值，推薦下注雙骰" + pair.join('-'));
+                    } else {
+                        pairFrequencyElement.className = "";
+                    }
+                });
+
+                for (var i = 0; i < 6; i++) {
+                    var singleDiceFrequencyElement = document.getElementById('singleDiceFrequency' + rowId + '-' + (i + 1));
+                    if (singleDiceFrequency[i] < expectedFrequencies.singleDice) {
+                        singleDiceFrequencyElement.className = "low";
+                        recommendations.push("單骰" + (i + 1) + "的出現頻率低於期望值，推薦下注單骰" + (i + 1));
+                    } else {
+                        singleDiceFrequencyElement.className = "";
+                    }
+                }
+
+                document.getElementById('recommendation').innerHTML = recommendations.join('<br>');
+            }
+
+            var allResults = analyzeResults(resultsArray);
+
+            // 更新所有歷史數據的表格
+            updateTable('All', allResults);
+
+            // 更新前10次的表格，如果不足10次，使用全部數據
+            if (resultsArray.length >= 10) {
+                var last10Results = analyzeResults(resultsArray.slice(-10));
+                updateTable('10', last10Results);
+            } else {
+                updateTable('10', allResults);
+            }
+
+            // 更新前20次的表格，如果不足20次，使用全部數據
+            if (resultsArray.length >= 20) {
+                var last20Results = analyzeResults(resultsArray.slice(-20));
+                updateTable('20', last20Results);
+            } else {
+                updateTable('20', allResults);
+            }
+        }
+    </script>
+</body>
+</html>
